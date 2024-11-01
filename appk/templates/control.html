@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Importer Chart.js -->
+
+    <link rel="stylesheet" href="{% static 'st/vendor/fontawesome-free/css/all.min.css' %}">
+
+    <link  href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+     <link href="{% static 'st/css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+
+
+
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center"  href="/bien">
+               <div class="sidebar-brand-icon rotate-n-15">
+                </div>
+               <div class="sidebar-brand-text mx-3">Admin</div>
+           </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+           <hr class="sidebar-divider">
+
+           <li class="nav-item active">
+            <a class="nav-link" href="{% url 'control' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Controle les stocks</span></a>
+        </li>
+   
+
+        <li class="nav-item active">
+            <a class="nav-link"href="{% url 'control' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Gestion de Stock</span></a>
+        </li>
+   
+         
+        
+           <!-- Sidebar Toggler (Sidebar) -->
+           <div class="text-center d-none d-md-inline">
+               <button class="rounded-circle border-0" id="sidebarToggle"></button>
+           </div>
+          
+       </ul>
+       <!-- End of Sidebar -->
+       <!-- Content Wrapper -->
+       <div id="content-wrapper" class="d-flex flex-column">
+           <!-- Main Content -->
+           <div id="content">
+               <!-- Topbar -->
+               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                   <!-- Sidebar Toggle (Topbar) -->
+                   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                       <i class="fa fa-bars"></i>
+                   </button>
+                   <!-- Topbar Search -->
+                  
+                   <!-- Topbar Navbar -->
+                   <ul class="navbar-nav ml-auto">
+                       <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                       <li class="nav-item dropdown no-arrow d-sm-none">
+                           <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               <i class="fas fa-search fa-fw"></i>
+                           </a>
+                           <!-- Dropdown - Messages -->
+                           <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                               aria-labelledby="searchDropdown">
+                               <form class="form-inline mr-auto w-100 navbar-search">
+                                   <div class="input-group">
+                                       <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search for..." aria-label="Search"
+                                           aria-describedby="basic-addon2">
+                                       <div class="input-group-append">
+                                           <button class="btn btn-primary" type="button">
+                                               <i class="fas fa-search fa-sm"></i>
+                                           </button>
+                                       </div>
+                                   </div>
+                               </form>
+                           </div>
+                       </li>
+
+ 
+
+
+
+                       <div class="topbar-divider d-none d-sm-block"></div>
+                     
+                       <li class="nav-item dropdown no-arrow">
+                           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               <span class="mr-2 d-none d-lg-inline text-gray-600 small">ADMIN</span>
+                         
+                           </a>
+                     
+                           <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                               aria-labelledby="userDropdown">
+                               <a class="dropdown-item" href="">
+                                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                   Profile
+                               </a>
+                              
+                              
+                               <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="">
+                                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                   Logout
+                               </a>
+                           </div>
+                       </li>
+                   </ul>
+               </nav>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Tableau de Bord </h1>
+
+    
+
+        <!-- Section des graphiques -->
+        <div class="row">
+            
+            <div class="col-md-4" style="margin-top: 9%;">
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <div class="col-md-4" style="margin-left: 10%;">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+
+          
+        </div>
+
+
+<br>
+        <div class="card mb-4">
+            <div class="card-header">
+               
+            </div>
+
+            <div class="row align-items-center" >
+                <br>
+                <div class="col-auto" style="margin-left: 10px;">
+
+                    <p><strong>Nombre de pièces :</strong> {{ piece_info.count }}</p>
+
+                    <p><strong>État :</strong> 
+                    {% if piece_info.running %}
+                        En cours
+                    {% else %}
+                        Terminée
+                    {% endif %}
+                    </p>
+
+                    <p><strong>Date de début :</strong> 
+                        {% if piece_info.start_date %}
+                            {{ piece_info.start_date|date:"d/m/Y H:i:s" }}
+                        {% else %}
+                            Non définie
+                        {% endif %}
+                    </p>
+
+                  
+                    
+                    <p><strong>Date de fin :</strong> 
+                        {% if piece_info.end_date %}
+                            {{ piece_info.end_date|date:"d/m/Y H:i:s" }}
+                        {% else %}
+                            En cours
+                        {% endif %}
+                    </p>
+
+
+                </div>
+               
+               
+               
+                <div class="d-flex justify-content-end" style="background-color: rgb(248, 243, 243);
+                float: right; width: 150px;   margin-left: 27%; height:150px; padding: 20px;">
+
+                    <!-- <p><strong>Dates d'activation :</strong></p> -->
+                    <ul>
+                        {% for date in piece_info.activation_dates %}
+                            <li>{{ date|date:" H:i:s" }}</li>
+                        {% empty %}
+                            <li>Aucune activation enregistrée.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-end" style="background-color: rgb(248, 243, 243);
+                float: right; width: 150px; margin-left:2%; height:150px; padding: 20px;">
+                   
+                    <p style="text-align: center; font-size: 20px; color: blue;"><strong>Nombre de pièces :</strong> <BR> <b>{{ piece_info.count }} </b></p>
+    
+                </div>
+
+
+
+            </div>
+             
+          
+
+
+            <div class="card-body" style="text-align:center">
+              
+             
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    {% if piece_info.running %}
+                        <button type="submit" name="action" value="stop" class="btn btn-danger">Arrêter</button>
+                    {% else %}
+                        <button type="submit" name="action" value="start" class="btn btn-success">Démarrer</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+
+  
+    <script>
+        var totalPieceA = {{ piece_info.count|default:0 }};  
+        var totalPieceB =2
+        var totalPieceC = 1
+
+    
+        var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+        var doughnutChart = new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pièce A', 'Pièce B', 'Pièce C'],
+                datasets: [{
+                    label: 'Nombre total',
+                    data: [totalPieceA, totalPieceB, totalPieceC],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)', 
+                        'rgba(5, 39, 112, 0.5)', 
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)', 
+                        'rgba(5, 39, 112, 1)', 
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Configuration et rendu du graphique en barres
+        var barCtx = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pièce A', 'Pièce B', 'Pièce C'],
+                datasets: [{
+                    label: 'Nombre total',
+                    data: [totalPieceA, totalPieceB, totalPieceC],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)', 
+                        'rgba(5, 39, 112, 0.5)', 
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)', 
+                        'rgba(5, 39, 112, 1)', 
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Configuration et rendu du graphique radar
+        var radarCtx = document.getElementById('radarChart').getContext('2d');
+        var radarChart = new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Pièce A', 'Pièce B', 'Pièce C'],
+                datasets: [{
+                    label: 'Nombre total',
+                    data: [totalPieceA, totalPieceB, totalPieceC],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)', 
+                        'rgba(5, 39, 112, 0.5)', 
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)', 
+                        'rgba(5, 39, 112, 1)', 
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+     </script>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script src="{% static 'st/vendor/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'st/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    
+ 
+        <script src="{% static 'st/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    
+ 
+        <script src="{% static 'st/js/sb-admin-2.min.js' %}"></script>
+
+</body>
+</html>
